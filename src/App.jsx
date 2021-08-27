@@ -7,6 +7,14 @@ import Store from "./componentes/Store";
 import Error404 from "./componentes/Error404";
 
 const App = () => {
+  const products = [
+    { id: 1, name: "Producto 1" },
+    { id: 2, name: "Producto 2" },
+    { id: 3, name: "Producto 3" },
+    { id: 4, name: "Producto 4" },
+    { id: 5, name: "Producto 5" },
+  ];
+
   return (
     <Contenedor>
       <Menu>
@@ -20,7 +28,9 @@ const App = () => {
         <Switch>
           <Route path="/" exact={true} component={Home} />
           <Route path="/Blog" component={Blog} />
-          <Route path="/Tienda" component={Store} />
+          <Route path="/Tienda">
+            <Store products={products} />
+          </Route>
           <Route component={Error404} />
         </Switch>
       </main>
