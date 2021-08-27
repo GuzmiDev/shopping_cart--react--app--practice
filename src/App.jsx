@@ -1,79 +1,41 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { NavLink, Switch, Route } from "react-router-dom";
+import { Provider } from "react-redux";
+import { createStore } from "redux";
 import Home from "./componentes/Home";
 import Blog from "./componentes/Blog";
 import Store from "./componentes/Store";
 import Error404 from "./componentes/Error404";
 import ShoppingCart from "./componentes/ShoppingCart";
+import reducer from "./reducers/tiendaReducer";
 
 const App = () => {
-  const products = [
-    { id: 1, name: "Producto 1" },
-    { id: 2, name: "Producto 2" },
-    { id: 3, name: "Producto 3" },
-    { id: 4, name: "Producto 4" },
-    { id: 5, name: "Producto 5" },
-  ];
-  const [shoppingCartProduct, setShoppingCartProduct] = useState([]);
-
-  const addProduct = (idProduct, name) => {
-    if (shoppingCartProduct.length === 0) {
-      setShoppingCartProduct([{ id: idProduct, name: name, amount: 1 }]);
-    } else {
-      const newShoppingCartProduct = [...shoppingCartProduct];
-
-      const alreadyShoppingCart =
-        newShoppingCartProduct.filter((product) => {
-          return product.id === idProduct;
-        }).length > 0;
-
-      if (alreadyShoppingCart) {
-        newShoppingCartProduct.forEach((product, index) => {
-          if (product.id === idProduct) {
-            const amountAdd = product.amount;
-            newShoppingCartProduct[index] = {
-              id: idProduct,
-              name: name,
-              amount: amountAdd + 1,
-            };
-          }
-        });
-      } else {
-        newShoppingCartProduct.push({ id: idProduct, name: name, amount: 1 });
-      }
-
-      setShoppingCartProduct(newShoppingCartProduct);
-    }
-  };
+  const store = createStore(reducer);
 
   return (
-    <Contenedor>
-      <Menu>
-        <NavLink to="/" exact={true}>
-          Inicio
-        </NavLink>
-        <NavLink to="/Blog">Blog</NavLink>
-        <NavLink to="/tienda">Tienda</NavLink>
-      </Menu>
-      <main>
-        <Switch>
-          <Route path="/" exact={true} component={Home} />
-          <Route path="/Blog" component={Blog} />
-          <Route path="/Tienda">
-            <Store
-              products={products}
-              setShoppingCartProduct={setShoppingCartProduct}
-              addProduct={addProduct}
-            />
-          </Route>
-          <Route component={Error404} />
-        </Switch>
-      </main>
-      <aside>
-        <ShoppingCart shoppingCartProduct={shoppingCartProduct} />
-      </aside>
-    </Contenedor>
+    <Provider store={store}>
+      <Contenedor>
+        <Menu>
+          <NavLink to="/" exact={true}>
+            Inicio
+          </NavLink>
+          <NavLink to="/Blog">Blog</NavLink>
+          <NavLink to="/tienda">Tienda</NavLink>
+        </Menu>
+        <main>
+          <Switch>
+            <Route path="/" exact={true} component={Home} />
+            <Route path="/Blog" component={Blog} />
+            <Route path="/Tienda" component={Store} />
+            <Route component={Error404} />
+          </Switch>
+        </main>
+        <aside>
+          <ShoppingCart />
+        </aside>
+      </Contenedor>
+    </Provider>
   );
 };
 const Contenedor = styled.div`
