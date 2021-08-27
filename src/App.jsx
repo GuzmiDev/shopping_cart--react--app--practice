@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { NavLink, Switch, Route } from "react-router-dom";
 import Home from "./componentes/Home";
 import Blog from "./componentes/Blog";
 import Store from "./componentes/Store";
 import Error404 from "./componentes/Error404";
+import ShoppingCart from "./componentes/ShoppingCart";
 
 const App = () => {
   const products = [
@@ -14,6 +15,37 @@ const App = () => {
     { id: 4, name: "Producto 4" },
     { id: 5, name: "Producto 5" },
   ];
+  const [shoppingCartProduct, setShoppingCartProduct] = useState([]);
+
+  const addProduct = (idProduct, name) => {
+    if (shoppingCartProduct.length === 0) {
+      setShoppingCartProduct([{ id: idProduct, name: name, amount: 1 }]);
+    } else {
+      const newShoppingCartProduct = [...shoppingCartProduct];
+
+      const alreadyShoppingCart =
+        newShoppingCartProduct.filter((product) => {
+          return product.id === idProduct;
+        }).length > 0;
+
+      if (alreadyShoppingCart) {
+        newShoppingCartProduct.forEach((product, index) => {
+          if (product.id === idProduct) {
+            const amountAdd = product.amount;
+            newShoppingCartProduct[index] = {
+              id: idProduct,
+              name: name,
+              amount: amountAdd + 1,
+            };
+          }
+        });
+      } else {
+        newShoppingCartProduct.push({ id: idProduct, name: name, amount: 1 });
+      }
+
+      setShoppingCartProduct(newShoppingCartProduct);
+    }
+  };
 
   return (
     <Contenedor>
@@ -29,13 +61,17 @@ const App = () => {
           <Route path="/" exact={true} component={Home} />
           <Route path="/Blog" component={Blog} />
           <Route path="/Tienda">
-            <Store products={products} />
+            <Store
+              products={products}
+              setShoppingCartProduct={setShoppingCartProduct}
+              addProduct={addProduct}
+            />
           </Route>
           <Route component={Error404} />
         </Switch>
       </main>
       <aside>
-        <h3>Sidebar</h3>
+        <ShoppingCart shoppingCartProduct={shoppingCartProduct} />
       </aside>
     </Contenedor>
   );
